@@ -10,6 +10,12 @@ const todoReducer = createSlice({
     reducers: {
         // combine all the actions that you need
         addTodo(state, action) { 
+            console.log(action);
+            const newlyCreatedTodo = {
+                id: new Date(),
+                title: action.payload,
+            };    
+            state.todoList.push(newlyCreatedTodo);
             return state;
         }
     }
