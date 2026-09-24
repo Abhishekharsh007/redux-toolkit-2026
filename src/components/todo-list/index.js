@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo, deleteTodo } from "../../store/slice/todoSlice";
+import { addTodo, deleteTodo, updateTodo } from "../../store/slice/todoSlice";
 
 function TodoList() { 
     const [currentTodo, setCurrentTodo] = useState('');
+    const [currentEditedTodoID, setCurrentEditedTodoId] = useState(null);
 
     const dispatch = useDispatch();
     // const extractUpdatedStateFromReduxStore = useSelector(state => state);
@@ -13,10 +14,22 @@ function TodoList() {
 
     function handleAddTodo() { 
         dispatch(addTodo(currentTodo));
+        setCurrentTodo('');
     }
 
     function handleDeleteTodo(getCurrentTodoID) { 
         dispatch(deleteTodo(getCurrentTodoID));
+    }
+
+    function handleChangeTodo(getCurrentTodo) {
+        setCurrentEditedTodoId(getCurrentTodo.id);
+        setCurrentTodo(getCurrentTodo.title);
+    }
+
+    function handleUpdateTodo() {
+        dispatch(updateTodo({ currentEditedTodoID, currentTodo }));
+        setCurrentTodo('');
+        setCurrentEditedTodoId(null);
     }
 
     return (
@@ -28,17 +41,27 @@ function TodoList() {
                 name="todo"
                 placeholder="Enter your todo"
             />
-            <button disabled={currentTodo === ""} onClick={handleAddTodo}>Add Todo</button>
+            <button
+                disabled={currentTodo === ""}
+                onClick={ currentEditedTodoID === null ? handleAddTodo : handleUpdateTodo}
+            >
+                { 
+                    currentEditedTodoID !== null ? 'Update Todo' : 'Add Todo'
+                }
+            </button>
             <ul>
                 {todoList && todoList.length > 0 ? todoList.map(
                     (todoItem) => (
                         <li key={todoItem.id}>
                             <p>
                                 {todoItem.title}
-                                <button onClick={() => handleDeleteTodo(todoItem.id)}>
-                                    Delete
-                                </button>
                             </p>
+                            <button onClick={() => handleDeleteTodo(todoItem.id)}>
+                                Delete
+                            </button>
+                            <button onClick={() => handleChangeTodo(todoItem)}>
+                                Update
+                            </button>
                         </li>
                     )
                 ) : null }

@@ -23,10 +23,24 @@ const todoReducer = createSlice({
                 todoItem => todoItem.id !== action.payload
             );
             return state;
+        },
+        updateTodo(state, action) { 
+            console.log(action);
+            
+            let getTodos = state.todoList;
+            const getCurrentTodoIndex = action.payload.currentEditedTodoID - 1;
+            console.log(getCurrentTodoIndex);
+
+            getTodos[getCurrentTodoIndex] = {
+                ...getTodos[getCurrentTodoIndex],
+                title: action.payload.currentTodo
+            };
+            state.todoList = getTodos;
+            return state;
         }
     }
 });
 
-export const { addTodo, deleteTodo } = todoReducer.actions;
+export const { addTodo, deleteTodo, updateTodo } = todoReducer.actions;
 
 export default todoReducer.reducer;
