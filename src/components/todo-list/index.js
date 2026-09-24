@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo } from "../../store/slice/todoSlice";
+import { addTodo, deleteTodo } from "../../store/slice/todoSlice";
 
 function TodoList() { 
     const [currentTodo, setCurrentTodo] = useState('');
@@ -13,6 +13,10 @@ function TodoList() {
 
     function handleAddTodo() { 
         dispatch(addTodo(currentTodo));
+    }
+
+    function handleDeleteTodo(getCurrentTodoID) { 
+        dispatch(deleteTodo(getCurrentTodoID));
     }
 
     return (
@@ -29,7 +33,12 @@ function TodoList() {
                 {todoList && todoList.length > 0 ? todoList.map(
                     (todoItem) => (
                         <li key={todoItem.id}>
-                            <p>{todoItem.title} <button>Delete</button></p>
+                            <p>
+                                {todoItem.title}
+                                <button onClick={() => handleDeleteTodo(todoItem.id)}>
+                                    Delete
+                                </button>
+                            </p>
                         </li>
                     )
                 ) : null }
