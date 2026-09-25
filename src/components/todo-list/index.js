@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo, deleteTodo, updateTodo } from "../../store/slice/todoSlice";
+import { addTodo, deleteTodo, fetchTodos, updateTodo } from "../../store/slice/todoSlice";
 
 function TodoList() { 
     const [currentTodo, setCurrentTodo] = useState('');
@@ -8,7 +8,7 @@ function TodoList() {
 
     const dispatch = useDispatch();
     // const extractUpdatedStateFromReduxStore = useSelector(state => state);
-    const { todoList } = useSelector(state => state.todo);
+    const { todoList, todoListFromApi, loading } = useSelector((state) => state.todo);
 
     // console.log(extractUpdatedStateFromReduxStore);
 
@@ -30,6 +30,19 @@ function TodoList() {
         dispatch(updateTodo({ currentEditedTodoID, currentTodo }));
         setCurrentTodo('');
         setCurrentEditedTodoId(null);
+    }
+
+    function fetchListOfTodosFromApi() { 
+        // dispatch(fetchTodos());
+    }
+
+    useEffect(() => {
+        dispatch(fetchTodos());
+    }, []);
+
+    console.log(todoListFromApi);
+    if (loading) { 
+        return <h1>Fetching todos from API! Please wait...</h1>
     }
 
     return (
@@ -65,6 +78,18 @@ function TodoList() {
                         </li>
                     )
                 ) : null }
+            </ul>
+            <button onClick={fetchListOfTodosFromApi}>
+                Fetch List of Todos From API
+            </button>
+            <ul>
+                {
+                    todoListFromApi && todoListFromApi.length > 0 ?
+                        todoListFromApi.map(todoItem => <li key={todoItem.id}>
+                            { todoItem.todo}
+                        </li>)
+                        : null
+                }
             </ul>
         </div>
     );

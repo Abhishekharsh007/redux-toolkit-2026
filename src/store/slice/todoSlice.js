@@ -1,7 +1,16 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+
+export const fetchTodos = createAsyncThunk('fetchTodos', async () => { 
+    const apiResponse = await fetch('https://dummyjson.com/todos'); 
+    const result = await apiResponse.json();
+    return result;
+});
 
 const initialState = {
     todoList: [],
+    loading: false,
+    todoListFromApi: [],
+    isError: false
 };
 
 const todoReducer = createSlice({
@@ -38,6 +47,21 @@ const todoReducer = createSlice({
             state.todoList = getTodos;
             return state;
         }
+    },
+    extraReducers: (builder) => { 
+        builder.addCase(fetchTodos.pending, (state, action) => {
+            state.loading = true;
+        });
+
+        builder.addCase(fetchTodos.fulfilled, (state, action) => {
+            state.loading = false;
+            state.todoListFromApi = action.payload.todos;
+        });
+
+        builder.addCase(fetchTodos.rejected, (state, action) => {
+            state.loading = false;
+            state.isError = true;
+        });
     }
 });
 
